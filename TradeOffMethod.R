@@ -7,8 +7,8 @@ simulateMeasuring <- function(g, G, p, x0, n) {
   for (i in seq(2,n+1)) {
     pValue <- prospectTheoreticalValue(g, G, p, a[i-1])
     epsilon <- pValue * 0.05
-    a[i] <- pValue # + runif(1, -epsilon, epsilon)
-    # a[i] <- humanRounding(a[i])
+    a[i] <- pValue + runif(1, -epsilon, epsilon)
+    a[i] <- humanRounding(a[i])
   }
   return (a)
 }
@@ -60,5 +60,12 @@ calculateEstimatedSet <- function(experimentalSet, normalisedPoint, r){
   for (i in seq(1, length(experimentalSet))){
     result[i] <- ((s0+i)/(s0+normalisedPoint))
   }
+  return (result)
+}
+
+calculateSlope <- function(set){
+  result <- rep (NA, length(set))
+  for (i in seq(2,length(set)))
+    result[i] <- (set[i]/set[i-1])
   return (result)
 }
