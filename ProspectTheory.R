@@ -39,11 +39,11 @@ prospectTheoreticalValueLoss <- function(l, L, p, y0) {
   epsilon <- 0.00001
   while (high >= low) {
     mid <- (high + low) / 2
-    if ((abs(prospectTheoreticalFunctionalLoss(mid,l,p) + y0value)) < 
+    if ((abs(prospectTheoreticalFunctionalLoss(mid,l,p) - y0value)) < 
           epsilon) {
       return (mid)
     }
-    else if ((prospectTheoreticalFunctionalLoss(mid,l,p) + y0value) > 0) {
+    else if ((prospectTheoreticalFunctionalLoss(mid,l,p) - y0value) < 0) {
       low <- mid
     }
     else {

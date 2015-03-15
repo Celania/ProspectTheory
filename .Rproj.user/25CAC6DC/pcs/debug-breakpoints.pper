@@ -1,36 +1,6 @@
 {
     "debugBreakpointsState" : {
         "breakpoints" : [
-            {
-                "editor_line_number" : 6,
-                "editor_state" : 1,
-                "function_name" : "simulateMeasuring",
-                "function_steps" : "2",
-                "id" : 9,
-                "is_package_breakpoint" : false,
-                "is_pending_debug_completion" : false,
-                "line_number" : 6,
-                "needs_updated_steps" : false,
-                "package_name" : "",
-                "path" : "~/GitHub/ProSeminar/ProspectTheory/TradeOffMethod.R",
-                "state" : 1,
-                "type" : 0
-            },
-            {
-                "editor_line_number" : 12,
-                "editor_state" : 1,
-                "function_name" : "simulateMeasuring",
-                "function_steps" : "3,4,2,4,2",
-                "id" : 10,
-                "is_package_breakpoint" : false,
-                "is_pending_debug_completion" : false,
-                "line_number" : 12,
-                "needs_updated_steps" : false,
-                "package_name" : "",
-                "path" : "~/GitHub/ProSeminar/ProspectTheory/TradeOffMethod.R",
-                "state" : 1,
-                "type" : 0
-            }
         ]
     }
 }

@@ -11,11 +11,17 @@ simulateMeasuring <- function(g, G, p, x0, n, type) {
     else {
       pValue <- prospectTheoreticalValueLoss(g, G, p, a[i-1])
     }
-    epsilon <- pValue * 0.05
-    a[i] <- pValue + runif(1, -epsilon, epsilon)
+    epsilon <- pValue * 0.01
+    if (type == "Gain") {
+      random <- (runif(1, -epsilon, epsilon)) 
+    }
+    else {
+      random <- (runif(1, epsilon, -epsilon))
+    }
+    a[i] <- pValue + random
     a[i] <- humanRounding(a[i])
   }
-  return (a)
+  return(a)
 }
 
 estimateProbabilityWeightingGain <- function(p){
@@ -36,12 +42,21 @@ probabilityProportionalityLoss <- function(p){
 
 
 # Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
-findFirstElementGreater <- function(experimentalSet,b){
-  for (i in seq(2,length(experimentalSet))){
-    if (experimentalSet[i] > b)
-      return (i)
+findFirstElement <- function(experimentalSet,b, type){
+  if (type == "Gain") {
+    for (i in seq(2,length(experimentalSet))){
+      if (experimentalSet[i] > b)
+        return (i)        
+    }
+    return (-1)  
   }
-  return (-1)
+  else {
+    for (i in seq(2,length(experimentalSet))){
+        if (experimentalSet[i] < b)
+          return (i)        
+    }
+    return (-1)
+  }
 }
 
 calculates0 <- function(r, i, b, experimentalSet){
@@ -55,17 +70,26 @@ calculateStepSize <- function(s0){
 # experimentalSet <- the experimental data gained from examining a person
 # normalisedPoint <- which point to use to normalise the estimated utility at (1 <= normalisedPoint <= length(experimentalSet))
 # r               <- the probability for the additional measuring required (0 <= r <= 1)
-calculateEstimatedSet <- function(experimentalSet, normalisedPoint, r){
-  b <- simulateMeasuring(0,experimentalSet[1],r,experimentalSet[2],1, "Gain")[2]
-  i <- findFirstElementGreater(experimentalSet, b)
-  
-  s0 <- (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
+calculateEstimatedSet <- function(experimentalSet, normalisedPoint, r, type){
+  b <- simulateMeasuring(0,experimentalSet[1],r,experimentalSet[2],1, type)[2]
+  i <- findFirstElement(experimentalSet, b, type)
   
   result <- rep(NA, length(experimentalSet))
-  for (i in seq(1, length(experimentalSet))){
-    result[i] <- ((s0+i)/(s0+normalisedPoint))
+  
+  if (type == "Gain") {
+    s0 <- (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
+    for (i in seq(1, length(experimentalSet))){
+      result[i] <- ((s0+i)/(s0+normalisedPoint))
+    }
+    return (result)
   }
-  return (result)
+  else {
+    s0 <- (1/(probabilityProportionalityLoss(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))  
+    for (i in seq(1, length(experimentalSet))){
+      result[i] <- (-(s0+i)/(s0+normalisedPoint))
+    }
+    return (result)
+  } 
 }
 
 calculateSlope <- function(set){
