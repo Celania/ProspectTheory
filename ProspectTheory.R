@@ -11,7 +11,7 @@ prospectTheoreticalFunctionalLoss <- function(g, b, p) {
             (1-probabilityWeightingLoss(p))*utilityFunctionLoss(g))
 }
 
-prospectTheoreticalValue <- function(g, G, p, x0) {
+prospectTheoreticalValueGain <- function(g, G, p, x0) {
   low <- x0
   high <- x0^2 # is there an underlying rule for determining a value?
   x0value <- prospectTheoreticalFunctionalGain(x0,G,p)
@@ -27,6 +27,27 @@ prospectTheoreticalValue <- function(g, G, p, x0) {
     }
     else {
       low <- mid
+    }
+  }
+  return (mid)
+}
+
+prospectTheoreticalValueLoss <- function(l, L, p, y0) {
+  high <- y0
+  low <- y0*10 # is there an underlying rule for determining a value?
+  y0value <- prospectTheoreticalFunctionalLoss(y0,L,p)
+  epsilon <- 0.00001
+  while (high >= low) {
+    mid <- (high + low) / 2
+    if ((abs(prospectTheoreticalFunctionalLoss(mid,l,p) + y0value)) < 
+          epsilon) {
+      return (mid)
+    }
+    else if ((prospectTheoreticalFunctionalLoss(mid,l,p) + y0value) > 0) {
+      low <- mid
+    }
+    else {
+      high <- mid
     }
   }
   return (mid)

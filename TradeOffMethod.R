@@ -1,11 +1,16 @@
-if(!exists("prospectTheoreticalValue", mode="function")) source("ProspectTheory.R")
+if(!exists("prospectTheoreticalValueGain", mode="function")) source("ProspectTheory.R")
 if(!exists("humanRounding", mode="function")) source("Rounding.R")
 if(!exists("probabilityWeightingGain", mode="function")) source("probabilityWeighting.R")
 
-simulateMeasuring <- function(g, G, p, x0, n) {
+simulateMeasuring <- function(g, G, p, x0, n, type) {
   a <- rep(x0, n+1)
   for (i in seq(2,n+1)) {
-    pValue <- prospectTheoreticalValue(g, G, p, a[i-1])
+    if (type == "Gain") {
+    pValue <- prospectTheoreticalValueGain(g, G, p, a[i-1])
+    }
+    else {
+      pValue <- prospectTheoreticalValueLoss(g, G, p, a[i-1])
+    }
     epsilon <- pValue * 0.05
     a[i] <- pValue + runif(1, -epsilon, epsilon)
     a[i] <- humanRounding(a[i])
@@ -51,7 +56,7 @@ calculateStepSize <- function(s0){
 # normalisedPoint <- which point to use to normalise the estimated utility at (1 <= normalisedPoint <= length(experimentalSet))
 # r               <- the probability for the additional measuring required (0 <= r <= 1)
 calculateEstimatedSet <- function(experimentalSet, normalisedPoint, r){
-  b <- simulateMeasuring(0,experimentalSet[1],r,experimentalSet[2],1)[2]
+  b <- simulateMeasuring(0,experimentalSet[1],r,experimentalSet[2],1, "Gain")[2]
   i <- findFirstElementGreater(experimentalSet, b)
   
   s0 <- (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))

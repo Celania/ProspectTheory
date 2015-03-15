@@ -1,0 +1,16 @@
+{
+    "contents" : "humanRounding <- function(x) {\n  errorTolerance <- 0.03\n  test <- 0\n  for (i in seq(floor(log(x,10))+1,1)) {\n    test <- round(x,-i)\n    if ((test <= x * (1+errorTolerance)) & (test >= x* (1-errorTolerance))){\n      return (test)\n    }\n  }\n  return (x)\n}\n\nhumanRounding2 <- function(x) {\n  return (round(x, -1* max(floor(log(x,10))+1-3,1)))\n}",
+    "created" : 1426432611078.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3795202842",
+    "id" : "C53453AE",
+    "lastKnownWriteTime" : 1426428802,
+    "path" : "~/GitHub/ProSeminar/ProspectTheory/Rounding.R",
+    "project_path" : "Rounding.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

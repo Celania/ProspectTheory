@@ -1,0 +1,16 @@
+{
+    "contents" : "lambda <- 2.25  # lambda > 1\nalpha <- 0.88   # 0 < alpha < 1\nbeta <- 0.88    # 0 < beta < 1\n\n# alpha <- 0.60   # 0 < alpha < 1\n# beta <- 0.88    # 0 < beta < 1\n\nutilityFunctionGain <- function(x) {\n  return (x^alpha)\n}\n\nutilityFunctionLoss <- function(x) {\n  return (-lambda*(-x)^beta)\n}",
+    "created" : 1426432612272.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "452553282",
+    "id" : "CCD07E4E",
+    "lastKnownWriteTime" : 1426430631,
+    "path" : "~/GitHub/ProSeminar/ProspectTheory/utilityFunctions.R",
+    "project_path" : "utilityFunctions.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

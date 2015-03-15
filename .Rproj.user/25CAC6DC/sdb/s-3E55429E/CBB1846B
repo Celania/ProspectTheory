@@ -1,0 +1,16 @@
+{
+    "contents" : "templateProbabilityWeighting <- function(p, gamma) {\n  return (p^gamma / (p^gamma + (1-p)^gamma)^(1/gamma))\n}\nprobabilityWeightingGain <- function(p) {\n  return (templateProbabilityWeighting(p, 0.61))\n}\nprobabilityWeightingLoss <- function(p) {\n  return (templateProbabilityWeighting(p, 0.69))\n}",
+    "created" : 1426432609882.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2157170521",
+    "id" : "CBB1846B",
+    "lastKnownWriteTime" : 1426428802,
+    "path" : "~/GitHub/ProSeminar/ProspectTheory/probabilityWeighting.R",
+    "project_path" : "probabilityWeighting.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
