@@ -21,6 +21,7 @@ humanRounding <- function(x) {
   return (x)
 }
 
+
 humanRounding2 <- function(x) {
   return (round(x, -1* max(floor(log(x,10))+1-3,1)))
 }

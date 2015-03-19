@@ -2,22 +2,24 @@ if(!exists("prospectTheoreticalValueGain", mode="function")) source("ProspectThe
 if(!exists("humanRounding", mode="function")) source("Rounding.R")
 if(!exists("probabilityWeightingGain", mode="function")) source("probabilityWeighting.R")
 
-simulateMeasuring <- function(g, G, p, x0, n, type) {
+simulateMeasuringGain <- function(g, G, p, x0, n) {
   a <- rep(x0, n+1)
   for (i in seq(2,n+1)) {
-    if (type == "Gain") {
     pValue <- prospectTheoreticalValueGain(g, G, p, a[i-1])
-    }
-    else {
-      pValue <- prospectTheoreticalValueLoss(g, G, p, a[i-1])
-    }
     epsilon <- pValue * 0.01
-    if (type == "Gain") {
-      random <- (runif(1, -epsilon, epsilon)) 
-    }
-    else {
-      random <- (runif(1, epsilon, -epsilon))
-    }
+    random <- (runif(1, -epsilon, epsilon)) 
+    a[i] <- pValue + random
+    a[i] <- humanRounding(a[i])
+  }
+  return(a)
+}
+
+simulateMeasuringLoss <- function(l, L, p, y0, n) {
+  a <- rep(y0, n+1)
+  for (i in seq(2,n+1)) {
+    pValue <- prospectTheoreticalValueLoss(l, L, p, a[i-1])
+    epsilon <- pValue * 0.01
+    random <- (runif(1, epsilon, -epsilon))
     a[i] <- pValue + random
     a[i] <- humanRounding(a[i])
   }
@@ -42,21 +44,20 @@ probabilityProportionalityLoss <- function(p){
 
 
 # Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
-findFirstElement <- function(experimentalSet,b, type){
-  if (type == "Gain") {
-    for (i in seq(2,length(experimentalSet))){
-      if (experimentalSet[i] > b)
-        return (i)        
-    }
-    return (-1)  
+findFirstElementGain <- function(experimentalSet,b){
+  for (i in seq(2,length(experimentalSet))){
+    if (experimentalSet[i] > b)
+      return (i)        
   }
-  else {
-    for (i in seq(2,length(experimentalSet))){
-        if (experimentalSet[i] < b)
-          return (i)        
-    }
-    return (-1)
+  return (-1)  
+}
+
+findFirstElementLoss <- function(experimentalSet,b){
+  for (i in seq(2,length(experimentalSet))){
+    if (experimentalSet[i] < b)
+      return (i)        
   }
+  return (-1)
 }
 
 calculates0 <- function(r, i, b, experimentalSet){
@@ -70,26 +71,26 @@ calculateStepSize <- function(s0){
 # experimentalSet <- the experimental data gained from examining a person
 # normalisedPoint <- which point to use to normalise the estimated utility at (1 <= normalisedPoint <= length(experimentalSet))
 # r               <- the probability for the additional measuring required (0 <= r <= 1)
-calculateEstimatedSet <- function(experimentalSet, normalisedPoint, r, type){
-  b <- simulateMeasuring(0,experimentalSet[1],r,experimentalSet[2],1, type)[2]
-  i <- findFirstElement(experimentalSet, b, type)
-  
-  result <- rep(NA, length(experimentalSet))
-  
-  if (type == "Gain") {
-    s0 <- (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
-    for (i in seq(1, length(experimentalSet))){
-      result[i] <- ((s0+i)/(s0+normalisedPoint))
-    }
-    return (result)
+calculateEstimatedSetGain <- function(experimentalSet, normalisedPoint, r){
+  b <- simulateMeasuringGain(0,experimentalSet[1],r,experimentalSet[2],1)[2]
+  i <- findFirstElementGain(experimentalSet, b)
+  result <- rep(NA, length(experimentalSet))  
+  s0 <- (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
+  for (i in seq(1, length(experimentalSet))){
+    result[i] <- ((s0+i)/(s0+normalisedPoint))
   }
-  else {
-    s0 <- (1/(probabilityProportionalityLoss(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))  
-    for (i in seq(1, length(experimentalSet))){
-      result[i] <- (-(s0+i)/(s0+normalisedPoint))
-    }
-    return (result)
-  } 
+  return (result)
+}
+
+calculateEstimatedSetLoss <- function(experimentalSet, normalisedPoint, r){
+  b <- simulateMeasuringLoss(0,experimentalSet[1],r,experimentalSet[2],1)[2]
+  i <- findFirstElementLoss(experimentalSet, b)
+  result <- rep(NA, length(experimentalSet))
+  s0 <- (1/(probabilityProportionalityLoss(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))  
+  for (i in seq(1, length(experimentalSet))){
+    result[i] <- (-(s0+i)/(s0+normalisedPoint))
+  }
+  return (result) 
 }
 
 calculateSlope <- function(set){
