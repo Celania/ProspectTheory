@@ -1,5 +1,5 @@
-if(!exists("simulateMeasuring", mode="function")) source("ProspectTheory.R")
-if(!exists("calculateEstimatedSet", mode="function")) source("TradeOffMethod.R")
+if(!exists("simulateMeasuringGain", mode="function")) source("ProspectTheory.R")
+if(!exists("calculateEstimatedSetGain", mode="function")) source("TradeOffMethod.R")
 
 analyseGains <- function(p, x0, g, G, n, r){
   experimentalSet <- simulateMeasuringGain(g, G, p, x0, n)
@@ -40,10 +40,10 @@ analyseLosses <- function(p, y0, l, L, n, r) {
   return (data.frame(experimentalSet, estimatedSet))    
 }
 
-analyseLinking <- function(p, y0, l, L, n, r) {
-#  experimentalSetLinking <- simulateMeasuring(l, L, p, y0, n)
-#  print(experimentalSet)
-  
+analyseLinking <- function(p, y0, y1, x0, n, r) {
+   
+  d <- (prospectTheoreticalValueMixed(y1, y0, p, x0)) 
+  print(d)
 #  experimentalUtilitySet <- (-2.25*(-experimentalSet)^0.88)
 #  print(experimentalUtilitySet)
   
@@ -60,6 +60,7 @@ analyseLinking <- function(p, y0, l, L, n, r) {
 }
 
 # combine in one function to ensure the right data for linking
-analyseGains(0.5,1500,300,1000,10,0.5)
-analyseLosses(0.5,-200,-50,-100,10,0.5)
-#analyseLinking(TODO)
+
+dataGain <- (analyseGains(0.5,1500,300,1000,10,0.5))
+dataLoss <- (analyseLosses(0.5,-200,-50,-100,10,0.5))
+analyseLinking(0.5, dataLoss[1,1], dataLoss[2,1], dataGain[1,1], 10, 0.5) #x0,y0,y1 from experimentalSet?

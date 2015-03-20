@@ -11,6 +11,11 @@ prospectTheoreticalFunctionalLoss <- function(g, b, p) {
             (1-probabilityWeightingLoss(p))*utilityFunctionLoss(g))
 }
 
+prospectTheoreticalFunctionalMixed <- function(g, b, p) {
+  return (probabilityWeightingGain(p)*utilityFunctionGain(g) + 
+            probabilityWeightingLoss(1-p)*utilityFunctionLoss(b))
+}
+  
 prospectTheoreticalValueGain <- function(g, G, p, x0) {
   low <- x0
   high <- x0^2 # is there an underlying rule for determining a value?
@@ -48,6 +53,27 @@ prospectTheoreticalValueLoss <- function(l, L, p, y0) {
     }
     else {
       high <- mid
+    }
+  }
+  return (mid)
+}
+
+prospectTheoreticalValueMixed <- function(y1, y0, p, x0) {
+  low <- x0
+  high <- x0^2 # is there an underlying rule for determining a value?
+  x0value <- prospectTheoreticalFunctionalMixed(x0,y0,p)
+  epsilon <- 0.00001
+  while (low <= high) {
+    mid <- (low + high) / 2
+    if ((abs(prospectTheoreticalFunctionalMixed(mid,y1,p) - x0value)) < 
+          epsilon) {
+      return (mid)
+    }
+    else if ((prospectTheoreticalFunctionalMixed(mid,y1,p) - x0value) > 0) {
+      high <- mid
+    }
+    else {
+      low <- mid
     }
   }
   return (mid)

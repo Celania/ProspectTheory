@@ -60,6 +60,13 @@ findFirstElementLoss <- function(experimentalSet,b){
   return (-1)
 }
 
+findFirstElementMixed <- function(experimentalSet,d){
+  for (i in seq(1, length(experimentalSet))){
+    if (experimentalSet[i] < d)
+      return (i)
+  }  
+}
+
 calculates0 <- function(r, i, b, experimentalSet){
   return (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
 }
