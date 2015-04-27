@@ -20,8 +20,8 @@ simulateMeasuringLoss <- function(l, L, p, y0, n) {
     pValue <- prospectTheoreticalValueLoss(l, L, p, a[i-1])
     epsilon <- pValue * 0.01
     random <- (runif(1, epsilon, -epsilon))
-    a[i] <- pValue + random
-    a[i] <- humanRounding(a[i])
+    a[i] <- pValue #+ random
+    #a[i] <- humanRounding(a[i])
   }
   return(a)
 }
@@ -42,6 +42,10 @@ probabilityProportionalityLoss <- function(p){
   return ((1-estimateProbabilityWeightingLoss(p))/estimateProbabilityWeightingLoss(p))
 }
 
+probabilityProportionalityMixed <- function(p){
+  return (estimateProbabilityWeightingGain(p)/estimateProbabilityWeightingLoss(1-p))
+}
+
 
 # Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementGain <- function(experimentalSet,b){
@@ -52,6 +56,7 @@ findFirstElementGain <- function(experimentalSet,b){
   return (-1)  
 }
 
+# Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementLoss <- function(experimentalSet,b){
   for (i in seq(2,length(experimentalSet))){
     if (experimentalSet[i] < b)
@@ -60,15 +65,25 @@ findFirstElementLoss <- function(experimentalSet,b){
   return (-1)
 }
 
+# Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementMixed <- function(experimentalSet,d){
   for (i in seq(1, length(experimentalSet))){
-    if (experimentalSet[i] < d)
+    if (experimentalSet[i] > d){
       return (i)
+    }
   }  
 }
 
 calculates0 <- function(r, i, b, experimentalSet){
   return (1/(probabilityProportionalityGain(r))) * (i-2+(b-experimentalSet[i-1])/(experimentalSet[i]-experimentalSet[i-1]))
+}
+
+calculatesz <- function(r, k, d, experimentalSet){
+  return (probabilityProportionalityMixed(r) * (k - 1 + (d - experimentalSet[k-1])/(experimentalSet[k] - experimentalSet[k-1]))) 
+}
+
+calculateStepSizeLinking <- function(sz, utilityStepSize){
+  return (sz * utilityStepSize)
 }
 
 calculateStepSize <- function(s0){

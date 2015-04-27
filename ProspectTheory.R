@@ -60,7 +60,7 @@ prospectTheoreticalValueLoss <- function(l, L, p, y0) {
 
 prospectTheoreticalValueMixed <- function(y1, y0, p, x0) {
   low <- x0
-  high <- x0^2 # is there an underlying rule for determining a value?
+  high <- x0 * 10 # is there an underlying rule for determining a value?
   x0value <- prospectTheoreticalFunctionalMixed(x0,y0,p)
   epsilon <- 0.00001
   while (low <= high) {
