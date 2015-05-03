@@ -6,10 +6,10 @@ simulateMeasuringGain <- function(g, G, p, x0, n) {
   a <- rep(x0, n+1)
   for (i in seq(2,n+1)) {
     pValue <- prospectTheoreticalValueGain(g, G, p, a[i-1])
-    epsilon <- pValue * 0.05
-    random <- (runif(1, -epsilon, epsilon)) 
-    a[i] <- pValue #+ random
-    #a[i] <- humanRounding(a[i])
+    epsilon <- pValue * errorGain
+    random <- (runif(1, -epsilon, epsilon))
+    a[i] <- pValue + random
+    a[i] <- humanRounding(a[i])
   }
   return(a)
 }
@@ -18,10 +18,10 @@ simulateMeasuringLoss <- function(l, L, p, y0, n) {
   a <- rep(y0, n+1)
   for (i in seq(2,n+1)) {
     pValue <- prospectTheoreticalValueLoss(l, L, p, a[i-1])
-    epsilon <- pValue * 0.05
+    epsilon <- pValue * errorLoss
     random <- (runif(1, epsilon, -epsilon))
-    a[i] <- pValue #+ random
-    #a[i] <- humanRounding(a[i])
+    a[i] <- pValue + random
+    a[i] <- humanRounding(a[i])
   }
   return(a)
 }
@@ -47,7 +47,6 @@ probabilityProportionalityMixed <- function(p){
 }
 
 
-# Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementGain <- function(experimentalSet,b){
   for (i in seq(2,length(experimentalSet))){
     if (experimentalSet[i] > b)
@@ -56,7 +55,6 @@ findFirstElementGain <- function(experimentalSet,b){
   return (-1)  
 }
 
-# Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementLoss <- function(experimentalSet,b){
   for (i in seq(2,length(experimentalSet))){
     if (experimentalSet[i] < b)
@@ -65,7 +63,6 @@ findFirstElementLoss <- function(experimentalSet,b){
   return (-1)
 }
 
-# Extrapolation muss implementiert werden für den Fall das b außerhalb des Experimental Sets liegt
 findFirstElementMixed <- function(experimentalSet,d){
   for (i in seq(1, length(experimentalSet))){
     if (experimentalSet[i] > d){

@@ -2,45 +2,43 @@ if(!exists("simulateMeasuringGain", mode="function")) source("ProspectTheory.R")
 if(!exists("calculateEstimatedSetGain", mode="function")) source("TradeOffMethod.R")
 
 analyseGains <- function(p, x0, g, G, n, r){
-  print("STARTING GAINS")
+  #print("STARTING GAINS")
   experimentalSet <- simulateMeasuringGain(g, G, p, x0, n)
-  print(experimentalSet)
+  #print(experimentalSet)
   
-  experimentalUtilitySet <- (experimentalSet^0.88)
-  print(experimentalUtilitySet)
+  experimentalUtilitySet <- (experimentalSet^alpha)
+  #print(experimentalUtilitySet)
   
   estimatedSet <- calculateEstimatedSetGain(experimentalSet, floor(length(experimentalSet)/2),r)
-  print(estimatedSet)
+  #print(estimatedSet)
   
-  plot(experimentalSet, experimentalUtilitySet, type="l")
-  plot(experimentalSet, estimatedSet, type="l")
+  #plot(experimentalSet, experimentalUtilitySet, type="l")
+  #plot(experimentalSet, estimatedSet, type="l")
 
-  #return (data.frame(experimentalSet, estimatedSet))
   return (list(experimentalSet=experimentalSet, estimatedSet=estimatedSet))
   
 }
 
 analyseLosses <- function(p, y0, l, L, n, r) {
   experimentalSet <- simulateMeasuringLoss(l, L, p, y0, n)
-  print("STARTING LOSSES")
-  print(experimentalSet)
+  #print("STARTING LOSSES")
+  #print(experimentalSet)
   
-  experimentalUtilitySet <- (-2.25*(-experimentalSet)^0.88)
-  print(experimentalUtilitySet)
+  experimentalUtilitySet <- (-lambda*(-experimentalSet)^Gbeta)
+  #print(experimentalUtilitySet)
   
   estimatedSet <- calculateEstimatedSetLoss(experimentalSet, floor(length(experimentalSet)/2),r)
-  print(estimatedSet)
+  #print(estimatedSet)
   
-  plot(experimentalSet, experimentalUtilitySet, type="l")
-  plot(experimentalSet, estimatedSet, type="l")
+  #plot(experimentalSet, experimentalUtilitySet, type="l")
+  #plot(experimentalSet, estimatedSet, type="l")
   
-  #return (data.frame(experimentalSet, estimatedSet))
   return (list(experimentalSet=experimentalSet, estimatedSet=estimatedSet))    
 }
 
 analyseLinking <- function(Gains, Losses, p, n, r) {
   
-  print("START LINKING")
+  #print("START LINKING")
   
   deltaULoss <- 0
   for (i in seq(1,n)){
@@ -60,18 +58,54 @@ analyseLinking <- function(Gains, Losses, p, n, r) {
   estimatedy <- c(rev(Losses[[2]]), Gains[[2]])
   
   rEstimated <- calculateRelation(estimatedy)
-  rReal <- calculateRelation(c(sapply(rev(dataLoss[[1]]), function(x) (-2.25*(-x)^0.88)), sapply(dataGain[[1]],function(x) x^0.88)))
-  print (sum(abs(rEstimated - rReal)))
+  rReal <- calculateRelation(c(sapply(rev(Losses[[1]]), function(x) (-lambda*(-x)^Gbeta)), sapply(Gains[[1]],function(x) x^alpha)))
+  #print (sum(abs(rEstimated - rReal)))
   
   plot(c(rev(Losses[[1]]),Gains[[1]]), c(rev(Losses[[2]]), Gains[[2]]), type="l")
-  return sum(abs(rEstimated - rReal))
+  plot(c(rev(Losses[[1]]),Gains[[1]]),c(sapply(rev(Losses[[1]]), function(x) (-lambda*(-x)^Gbeta)), sapply(Gains[[1]],function(x) x^alpha)),type = "l")
+  return (sum(abs(rEstimated - rReal)))
 }
 
-# combine in one function to ensure the right data for linking
+MeasureError <- function(alpha, beta, gammaGain, gammaLoss, lambda, errorGain, errorLoss, errorTolerance, rounding, #Global Params
+                         pGain, x0, g, G, nGain, rGain, #Params for Gains
+                         pLoss, y0, l, L, nLoss, rLoss, #Params for Losses
+                         pLinking, nLinking, rLinking){ #Params for Linking
+  times <- 1
+  
+  alpha <<- alpha
+  Gbeta <<- beta
+  gammaGain <<- gammaGain
+  gammaLoss <<- gammaLoss
+  lambda <<- lambda
+  errorGain <<- errorGain
+  errorLoss <<- errorLoss
+  errorTolerance <<- errorTolerance
+  rounding <<- rounding
+  
+  relA <- 0
+  for (i in seq(1,times)){
+  dataGain <- (analyseGains(pGain, x0, g, G, nGain, rGain))
+  dataLoss <- (analyseLosses(pLoss, y0, l, L, nLoss, rLoss))
+  relA <- relA + analyseLinking(dataGain, dataLoss, pLinking, nLinking, rLinking)
+  }
+  return(relA/times)
+}
 
-dataGain <- (analyseGains(0.5,1500,300,1000,10,0.5))
-dataLoss <- (analyseLosses(0.5,-2000,-500,-1000,10,0.5))
-relA <- analyseLinking(dataGain, dataLoss, 0.5, 3, 0.5)
+#MeasureError(0.88, 0.88, 0.61, 0.69, 2.25, 0.05, 0.05, 0.00001, TRUE,
+#             0.5,1500,300,1000,10,0.5,
+#             0.5,-2000,-500,-1000,10,0.5,
+#             0.5, 3, 0.5)
 
-dataGain <- (an)
-plot(c(rev(dataLoss[[1]]),dataGain[[1]]),c(sapply(rev(dataLoss[[1]]), function(x) (-2.25*(-x)^0.88)), sapply(dataGain[[1]],function(x) x^0.88)),type = "l")
+MeasureImport <- function(){
+  Input <- read.csv(file="Input.csv", head=TRUE, sep="," )
+  Output <- NULL
+  for (i in seq(1, nrow(Input))){
+  Output <- c(Output, MeasureError(Input[i,1],Input[i,2],Input[i,3], Input[i,4],Input[i,5],Input[i,6],Input[i,7],Input[i,8],Input[i,9],
+                Input[i,10],Input[i,11],Input[i,12],Input[i,13],Input[i,14],Input[i,15],
+                Input[i,16],Input[i,17],Input[i,18],Input[i,19],Input[i,20],Input[i,21],
+                Input[i,22],Input[i,23],Input[i,24])) 
+  }
+  print(Output)
+}
+
+MeasureImport()

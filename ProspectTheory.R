@@ -20,7 +20,7 @@ prospectTheoreticalValueGain <- function(g, G, p, x0) {
   low <- x0
   high <- x0^2 # is there an underlying rule for determining a value?
   x0value <- prospectTheoreticalFunctionalGain(x0,G,p)
-  epsilon <- 0.00001
+  epsilon <- errorTolerance
   while (low <= high) {
     mid <- (low + high) / 2
     if ((abs(prospectTheoreticalFunctionalGain(mid,g,p) - x0value)) < 
@@ -41,7 +41,7 @@ prospectTheoreticalValueLoss <- function(l, L, p, y0) {
   high <- y0
   low <- y0*10 # is there an underlying rule for determining a value?
   y0value <- prospectTheoreticalFunctionalLoss(y0,L,p)
-  epsilon <- 0.00001
+  epsilon <- errorTolerance
   while (high >= low) {
     mid <- (high + low) / 2
     if ((abs(prospectTheoreticalFunctionalLoss(mid,l,p) - y0value)) < 
@@ -62,7 +62,7 @@ prospectTheoreticalValueMixed <- function(y1, y0, p, x0) {
   low <- x0
   high <- x0 * 10 # is there an underlying rule for determining a value?
   x0value <- prospectTheoreticalFunctionalMixed(x0,y0,p)
-  epsilon <- 0.00001
+  epsilon <- errorTolerance
   while (low <= high) {
     mid <- (low + high) / 2
     if ((abs(prospectTheoreticalFunctionalMixed(mid,y1,p) - x0value)) < 

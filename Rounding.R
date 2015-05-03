@@ -1,4 +1,6 @@
 humanRounding <- function(x) {
+  if (rounding == FALSE)
+      return (x)
   negative <- (FALSE)
   if (x < 0) {
     negative <- (TRUE)
