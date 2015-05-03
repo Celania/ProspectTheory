@@ -6,10 +6,10 @@ simulateMeasuringGain <- function(g, G, p, x0, n) {
   a <- rep(x0, n+1)
   for (i in seq(2,n+1)) {
     pValue <- prospectTheoreticalValueGain(g, G, p, a[i-1])
-    epsilon <- pValue * 0.01
+    epsilon <- pValue * 0.05
     random <- (runif(1, -epsilon, epsilon)) 
-    a[i] <- pValue + random
-    a[i] <- humanRounding(a[i])
+    a[i] <- pValue #+ random
+    #a[i] <- humanRounding(a[i])
   }
   return(a)
 }
@@ -18,7 +18,7 @@ simulateMeasuringLoss <- function(l, L, p, y0, n) {
   a <- rep(y0, n+1)
   for (i in seq(2,n+1)) {
     pValue <- prospectTheoreticalValueLoss(l, L, p, a[i-1])
-    epsilon <- pValue * 0.01
+    epsilon <- pValue * 0.05
     random <- (runif(1, epsilon, -epsilon))
     a[i] <- pValue #+ random
     #a[i] <- humanRounding(a[i])
@@ -115,9 +115,9 @@ calculateEstimatedSetLoss <- function(experimentalSet, normalisedPoint, r){
   return (result) 
 }
 
-calculateSlope <- function(set){
-  result <- rep (NA, length(set))
-  for (i in seq(2,length(set)))
-    result[i] <- (set[i]/set[i-1])
+calculateRelation <- function(sety){
+  result <- rep (0, length(sety))
+  for (i in seq(2,length(sety)))
+    result[i] <- (sety[i]/sety[i-1])
   return (result)
 }
